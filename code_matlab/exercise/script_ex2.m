@@ -57,5 +57,14 @@ grad = zeros(1,n);
 % ===============================================================
 
 
+y_c = @(y, i, c) (y(i) == c);
+
+theta = zeros(10, n);
+for c=0:9
+    for j=1:n
+        h_c = @(x_i) lrc.sigmoid(x_i * transpose(theta(c+1, :)));
+        theta(c+1, j) = grad_J(c, X, j, y, h_c, y_c);
+    end
+end
 
 disp(grad*grad')

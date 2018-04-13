@@ -62,15 +62,29 @@ J = 0;
 %     imshow(mat2gray( training.images(:,:,k)));
 % end
 
+% apparently, c=0 (tested with t = @(i) [h_c(phi, X, i), y(i)];)
+c=0;
+
 y_c = @(y, i, c) (y(i) == c);
+h_c = @(theta_c, X, i) lrc.sigmoid(X(i, :) * transpose(theta_c));
+J_c_i = @(theta_c, X, y, c, i) ...
+         y_c(y, i, c)  * log(    h_c(theta_c, X, i)) + ...
+    (1 - y_c(y, i, c)) * log(1 - h_c(theta_c, X, i));
+J_c = @(theta_c, X, y, c) ...
+    (-1/m) * tools.sigma(1, m, @(i) J_c_i(theta_c, X, y, c, i));
 
-theta = zeros(10, n);
-for c=0:9
-    for j=1:n
-        h_c = @(x_i) lrc.sigmoid(x_i * transpose(theta(c+1, :)));
-        theta(c+1, j) = grad_J(c, X, j, y, h_c, y_c);
-    end
+for i=1:m
+    J = J + J_c_i(phi, X, y, c, i);
 end
+J=-J/m;
 
+disp(J_c(phi, X, y, c))
 disp(J)
 
+%The issue is clearly not from my function. I must have misunderstood
+%something at some point...
+disp(J_c_i(phi, X, y, 0, 1))
+disp(log(1 - lrc.sigmoid(X(1, :) * phi')))
+
+disp(J_c_i(phi, X, y, 0, 2))
+disp(log(    lrc.sigmoid(X(2, :) * phi')))
