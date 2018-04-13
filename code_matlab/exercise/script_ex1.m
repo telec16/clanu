@@ -1,4 +1,4 @@
-clear all;
+clear;
 close all;
 clc;
 addpath('../');
@@ -57,6 +57,25 @@ J = 0;
 % YOU SHOULD COMPUTE THE VALUE OF THE ENERGY FUNCTION J
 % ===============================================================
 
+
+%Ok, let's try this the hard&ugly way
+for c=0:9
+    J=0;
+    for i=1:m
+        if(y(i) == c)
+            yc = 1;
+        else
+            yc = 0;
+        end
+
+        h = lrc.sigmoid(X(i, :) * phi');
+
+        J = J + yc*log(h) + (1-yc)*log(1-h);
+    end
+    disp(-J/m)
+end
+
+
 % for k=1:3
 %     figure
 %     imshow(mat2gray( training.images(:,:,k)));
@@ -73,6 +92,7 @@ J_c_i = @(theta_c, X, y, c, i) ...
 J_c = @(theta_c, X, y, c) ...
     (-1/m) * tools.sigma(1, m, @(i) J_c_i(theta_c, X, y, c, i));
 
+J=0;
 for i=1:m
     J = J + J_c_i(phi, X, y, c, i);
 end
@@ -88,3 +108,4 @@ disp(log(1 - lrc.sigmoid(X(1, :) * phi')))
 
 disp(J_c_i(phi, X, y, 0, 2))
 disp(log(    lrc.sigmoid(X(2, :) * phi')))
+

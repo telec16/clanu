@@ -1,4 +1,4 @@
-clear all;
+clear;
 close all;
 clc;
 addpath('../');
@@ -55,16 +55,12 @@ grad = zeros(1,n);
 % ====================== YOUR CODE HERE =========================
 % YOU SHOULD COMPUTE THE GRADIENT VECTOR OF THE ENERGY FUNCTION J
 % ===============================================================
+c=0;
 
-
-y_c = @(y, i, c) (y(i) == c);
-
-theta = zeros(10, n);
-for c=0:9
-    for j=1:n
-        h_c = @(x_i) lrc.sigmoid(x_i * transpose(theta(c+1, :)));
-        theta(c+1, j) = grad_J(c, X, j, y, h_c, y_c);
-    end
+grad = zeros(1, n);
+for j=1:n
+    grad(j) = grad_J(phi, X, y, c, j);
 end
 
-disp(grad*grad')
+disp(grad*grad') % after like hours I get that : 7.5591e-07 :(
+%WTF?!
