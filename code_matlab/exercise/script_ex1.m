@@ -58,21 +58,22 @@ J = 0;
 % ===============================================================
 
 
-%Ok, let's try this the hard&ugly way
+
+
+h = lrc.sigmoid(X * phi');
 for c=0:9
-    J=0;
-    for i=1:m
-        if(y(i) == c)
-            yc = 1;
-        else
-            yc = 0;
-        end
+    yc = y==c;
+    gJ=sum(X .* (h-yc))/m;
+    disp(gJ*gJ')
+end
 
-        h = lrc.sigmoid(X(i, :) * phi');
+disp("mia")
 
-        J = J + yc*log(h) + (1-yc)*log(1-h);
-    end
-    disp(-J/m)
+h = lrc.sigmoid(X * phi');
+for c=0:9
+    yc = y==c;
+    J=-sum(yc.*log(h) + (1-yc).*log(1-h))/m;
+    disp(J)
 end
 
 

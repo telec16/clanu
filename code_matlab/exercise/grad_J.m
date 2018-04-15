@@ -7,7 +7,7 @@ function g = grad_J(theta_c, X, y, c, j)
 %   j is a scalar that correspond to a pixel in a picture
 
 
-%   y_c(y, i, c) is a function that test weither or not y(i) equals c
+%   y_c(y, i, c) is a function that test whether or not y(i) equals c
 y_c = @(y, i, c) (y(i) == c);
 
 %   h_c(x) is a function that evaluate the probability that the value of x is c
