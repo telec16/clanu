@@ -1,5 +1,7 @@
 *.docx
 
+*.mat
+
 LR_MNIST/html/*
 LR_MNIST/data/*
 
