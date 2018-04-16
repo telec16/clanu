@@ -7,11 +7,11 @@ function [J, grad] = lrCostFunction(phi, X, y)
 
     
     %-- Initialization of energy value J
-    J = 0;
+    %J = 0;
 
     %-- Initialization of gradient vector
     [m,n] = size(X);
-    grad = zeros(1,n);
+    %grad = zeros(1,n);
     
     
     % ====================== YOUR CODE HERE =========================
@@ -20,6 +20,9 @@ function [J, grad] = lrCostFunction(phi, X, y)
     %   - THE GRADIENT VECTOR OF THE ENERGY FUNCTION J
     % ===============================================================
     
-
+    h = lrc.sigmoid(X * phi');
+    
+    J=-sum(y.*log(h) + (1-y).*log(1-h))/m;
+    grad=sum(X .* (h-y))/m;
 
 end
