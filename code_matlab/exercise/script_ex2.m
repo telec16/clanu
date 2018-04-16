@@ -62,5 +62,4 @@ yc = y==c;
 grad=sum(X .* (h-y))/m;
 
 
-disp(grad*grad') % after like hours I get that : 7.5591e-07 :(
-%WTF?!
+disp(grad*grad') 

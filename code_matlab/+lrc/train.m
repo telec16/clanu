@@ -20,7 +20,7 @@ function [all_theta] = train(X, y, num_labels, maxIter, epsilon, tau)
         
         %-- Run gradient descent method to update theta values
         options = struct('MaxIter',maxIter,'epsilon',epsilon,'tau',tau);
-        [theta] = lrc.gradient_descent(@(t)(lrc.lrCostFunction(t, X, (y == c-1))), initial_theta, options);
+        [theta] = lrc.conjugate_gradient(@(t)(lrc.lrCostFunction(t, X, (y == c-1))), initial_theta, options);
         
         %-- Store corresponding result into all_theta matrix
         all_theta(c,:) = theta;

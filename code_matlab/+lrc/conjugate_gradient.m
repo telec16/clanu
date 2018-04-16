@@ -17,7 +17,12 @@ function [Xk, gk, i] = conjugate_gradient(f, Xk, options)
         i = i+1;
         
         %-- our code here :
-      
+        Xk = Xk + options.tau*dk;
+        [fk,gkp] = f(Xk);
+        betak=(gkp*(gkp-gk)')/(norm(gk)^2);
+        dk = - gkp + betak*dk;
+        gk = gkp;
+        
         %-- display iterative cost value
         S = 'Iteration ';
         f1 = norm(fk);
