@@ -57,26 +57,6 @@ J = 0;
 % YOU SHOULD COMPUTE THE VALUE OF THE ENERGY FUNCTION J
 % ===============================================================
 
-
-
-
-h = lrc.sigmoid(X * phi');
-for c=0:9
-    yc = y==c;
-    gJ=sum(X .* (h-yc))/m;
-    disp(gJ*gJ')
-end
-
-disp("mia")
-
-h = lrc.sigmoid(X * phi');
-for c=0:9
-    yc = y==c;
-    J=-sum(yc.*log(h) + (1-yc).*log(1-h))/m;
-    disp(J)
-end
-
-
 % for k=1:3
 %     figure
 %     imshow(mat2gray( training.images(:,:,k)));
@@ -85,28 +65,9 @@ end
 % apparently, c=0 (tested with t = @(i) [h_c(phi, X, i), y(i)];)
 c=0;
 
-y_c = @(y, i, c) (y(i) == c);
-h_c = @(theta_c, X, i) lrc.sigmoid(X(i, :) * transpose(theta_c));
-J_c_i = @(theta_c, X, y, c, i) ...
-         y_c(y, i, c)  * log(    h_c(theta_c, X, i)) + ...
-    (1 - y_c(y, i, c)) * log(1 - h_c(theta_c, X, i));
-J_c = @(theta_c, X, y, c) ...
-    (-1/m) * tools.sigma(1, m, @(i) J_c_i(theta_c, X, y, c, i));
-
-J=0;
-for i=1:m
-    J = J + J_c_i(phi, X, y, c, i);
-end
-J=-J/m;
-
-disp(J_c(phi, X, y, c))
+h = lrc.sigmoid(X * phi');
+yc = y==c;
+J=-sum(y.*log(h) + (1-y).*log(1-h))/m;
+    
 disp(J)
-
-%The issue is clearly not from my function. I must have misunderstood
-%something at some point...
-disp(J_c_i(phi, X, y, 0, 1))
-disp(log(1 - lrc.sigmoid(X(1, :) * phi')))
-
-disp(J_c_i(phi, X, y, 0, 2))
-disp(log(    lrc.sigmoid(X(2, :) * phi')))
 

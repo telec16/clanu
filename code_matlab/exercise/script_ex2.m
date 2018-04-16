@@ -57,10 +57,10 @@ grad = zeros(1,n);
 % ===============================================================
 c=0;
 
-grad = zeros(1, n);
-for j=1:n
-    grad(j) = grad_J(phi, X, y, c, j);
-end
+h = lrc.sigmoid(X * phi');
+yc = y==c;
+grad=sum(X .* (h-y))/m;
+
 
 disp(grad*grad') % after like hours I get that : 7.5591e-07 :(
 %WTF?!
