@@ -70,4 +70,4 @@ for method = methods
 end
 hold off;
 
-fprintf('\n\n\nEnd. Thank you.');
+fprintf('\n\n\nEnd. Thank you.\n');

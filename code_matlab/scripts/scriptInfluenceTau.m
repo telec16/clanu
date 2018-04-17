@@ -1,7 +1,17 @@
-clear all;
+clear;
 close all;
 clc;
 addpath('../');
+
+
+%-- parameters
+fromTau = 0.01; %-- gradient descent: start number of learning rate coefficient 
+stepsTau = 10;  %-- gradient descent: step number of learning rate coefficient
+toTau = 2.5;    %-- gradient descent: end number of learning rate coefficient
+epsilon = 0;    %-- gradient descent: convergence thresholder
+maxIter = 40;   %-- gradient descent: iterations
+methods = ["simple", "conjugate"];
+ 
 
 %-- mnist database location
 url = 'https://www.creatis.insa-lyon.fr/~bernard/ge/';
@@ -20,57 +30,44 @@ load([local_data_path,filename_db]);
 widthDigit = size(training.images,2);
 heightDigit = size(training.images,1);
 
-%-- Create X matrix for train
-X = zeros(size(training.images,3),widthDigit*heightDigit+1);
-for k=1:size(training.images,3)
-    digit = training.images(:,:,k);
+
+num_labels = 10;          %-- 10 labels, from 0 to 9
+
+
+
+%-- Create X matrix
+X = zeros(size(test.images,3),widthDigit*heightDigit+1);
+for k=1:size(test.images,3)
+    digit = test.images(:,:,k);
     X(k,:) = [1,digit(:)'];
 end
 
 
-%-- Create y vector for train
-y = training.labels;
+%-- Create y vector
+y = test.labels;
 m = size(X,1);
 
-%-- Create X matrix for test
-Xt = zeros(size(test.images,3),widthDigit*heightDigit+1);
-for k=1:size(test.images,3)
-    digit = test.images(:,:,k);
-    Xt(k,:) = [1,digit(:)'];
-end
-yt = test.labels;
-m = size(Xt,1);
 
-%Number of labels
-num_labels = 10; 
-
-%--  train logistic regression method -> gradient descent
-disp('\nTraining Logistic Regression with simple gradient descent methode depending on interval...\n')
-maxIter=40;
-epsilon=0.01;
-methode = 0;
-accuracy_gradient_descent=zeros(1,10);
-for i=1:10
-    tau=0.01+(i-1)*(83/3);
-    [all_theta] = lrc.train(X, y, num_labels, maxIter, epsilon, tau, methode);
-    pred = lrc.predict(all_theta, Xt);
-    accuracy_gradient_descent(i)= mean(double(pred == yt) * 100);
-end
-
-%--  train logistic regression method -> conjugate gradient
-disp('\nTraining Logistic Regression with conjugate gradient depending on interval...\n')
-maxIter=40;
-epsilon=0.01;
-methode = 1;
-accuracy_conjugate_gradient=zeros(1,10);
-for i=1:10
-    tau=0.01+(i-1)*(83/3);
-    [all_theta] = lrc.train(X, y, num_labels, maxIter, epsilon, tau, methode);
-    pred = lrc.predict(all_theta, Xt);
-    accuracy_conjugate_gradient(i)= mean(double(pred == yt) * 100);
-end
-
+%--  train logistic regression method
 figure;
-plot(20:18:200,accuracy_gradient_descent,'c');
 hold on;
-plot(20:18:200,accuracy_conjugate_gradient,'b');
+accuracies = struct;
+for method = methods
+    fprintf('\n\n\nTraining Logistic Regression with %s gradient descent methode depending on learning rate coefficient...\n\n\n', method);
+
+    accuracy=zeros(1,10);
+    for i=1:stepsTau
+        tau=fromTau+(i-1)*((toTau-fromTau)/(stepsTau-1));
+        fprintf('\n\nCurrently: %4i\n\n', tau);
+        
+        [all_theta] = lrc.train(X, y, num_labels, maxIter, epsilon, tau, method);
+        pred = lrc.predict(all_theta, X);
+        accuracy(i) = mean(double(pred == y) * 100);
+    end
+    
+    accuracies.(method) = accuracy;
+    plot(accuracy);
+end
+hold off;
+
+fprintf('\n\n\nEnd. Thank you.\n');
