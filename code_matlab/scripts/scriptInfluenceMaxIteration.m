@@ -58,7 +58,7 @@ for method = methods
     accuracy=zeros(1,10);
     for i=1:stepsIter
         maxIter=fromIter+(i-1)*((toIter-fromIter)/(stepsIter-1));
-        fprintf('\n\nCurrently: %4i\n\n', num2str(maxIter));
+        fprintf('\n\nCurrently: %4i\n\n', maxIter);
         
         [all_theta] = lrc.train(X, y, num_labels, maxIter, epsilon, tau, method);
         pred = lrc.predict(all_theta, X);
