@@ -62,12 +62,12 @@ J = 0;
 %     imshow(mat2gray( training.images(:,:,k)));
 % end
 
-% apparently, c=0 (tested with t = @(i) [h_c(phi, X, i), y(i)];)
+% apparently, c=0 (tested with t = @(i) [h(i), y(i)];)
 c=0;
 
 h = lrc.sigmoid(X * phi');
 yc = y==c;
-J=-sum(y.*log(h) + (1-y).*log(1-h))/m;
+J=-sum(yc.*log(h) + (1-yc).*log(1-h))/m;
     
 disp(J)
 

@@ -59,7 +59,7 @@ c=0;
 
 h = lrc.sigmoid(X * phi');
 yc = y==c;
-grad=sum(X .* (h-y))/m;
+grad=sum(X .* (h-yc))/m;
 
 
 disp(grad*grad') 
