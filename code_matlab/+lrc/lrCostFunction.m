@@ -1,4 +1,4 @@
-function [J, grad] = lrCostFunction(phi, X, y)
+function [J, grad] = lrCostFunction(phi, X, yc)
 
     %-- LRCOSTFUNCTION Compute cost and gradient for logistic regression
     %--   J = LRCOSTFUNCTION(phi, X, y, lambda) computes the cost of using
@@ -19,12 +19,8 @@ function [J, grad] = lrCostFunction(phi, X, y)
     %   - THE VALUE OF THE ENERGY FUNCTION J
     %   - THE GRADIENT VECTOR OF THE ENERGY FUNCTION J
     % ===============================================================
-    
-    
-    c=1;
 
     h = lrc.sigmoid(X * phi');
-    yc = y==c;
     
     J=-sum(yc.*log(h) + (1-yc).*log(1-h))/m;
     grad=sum(X .* (h-yc))/m;
