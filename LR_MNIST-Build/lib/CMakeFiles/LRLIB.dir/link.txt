@@ -1,0 +1,2 @@
+C:\MinGW\bin\ar.exe qc libLRLIB.a  CMakeFiles/LRLIB.dir/clanu_functions.cpp.obj CMakeFiles/LRLIB.dir/common_functions.cpp.obj
+C:\MinGW\bin\ranlib.exe libLRLIB.a
