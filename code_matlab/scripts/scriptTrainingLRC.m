@@ -5,8 +5,8 @@ addpath('../');
 
 
 %-- parameters
-maxIter = 20;   %-- gradient descent: maximum number of iterations
-epsilon = 0.01; %-- gradient descent: convergence thresholder
+maxIter = 100;   %-- gradient descent: maximum number of iterations
+epsilon = 0.001; %-- gradient descent: convergence thresholder
 tau = 1;        %-- gradient descent: learning rate coefficient 
         
 
@@ -51,11 +51,11 @@ rand_indices = randperm(m);
 sel = X(rand_indices(1:100), :);
 visu.displayDatabase(sel,widthDigit,heightDigit);
 
-
+tic
 %--  train logistic regression method
 disp('\nTraining Logistic Regression...\n')
 [all_theta] = lrc.train(X, y, num_labels, maxIter, epsilon, tau);
-
+toc
 
 %-- Save learned parameters
 filename_param = 'param_mnist.mat';

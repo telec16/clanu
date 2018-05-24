@@ -12,6 +12,9 @@
 #include "clanu_functions.h"
 #include "timing_functions.h"
 
+#include <stdio.h>
+#include <string.h>
+
 using namespace std;
 
 
@@ -38,18 +41,28 @@ int main(int argc, char *argv[])
 FLOAT_TYPE tau;
 unsigned int max_it;
 
-if( argc < 5)
+cout << "argc:" << argc <<endl;
+if( argc < 7)
     {
-        cerr << " Usage : " << argv[0] << " Train_filename.csv Test_filename.csv max_it tau" << endl;
+        cerr << " Usage : " << argv[0] << " data\\path Train_filename.csv Test_filename.csv Theta.csv max_it tau" << endl;
         return -1;
     }
 
-max_it = stoul( argv[3] );
-tau    = stof ( argv[4] );
+char train_file[50] = {0};
+char test_file[50]  = {0};
+char theta_file[50] = {0};
+
+strcat(train_file, argv[1]);strcat(train_file, argv[2]);
+strcat(test_file , argv[1]);strcat(test_file , argv[3]);
+strcat(theta_file, argv[1]);strcat(theta_file, argv[4]);
+
+max_it = stoul( argv[5] );
+tau    = stof ( argv[6] );
 // Summarizing options
 cout << " ** summarize options : " << endl;
-cout << " \t Training file : " << argv[1] << endl;
-cout << " \t Testing  file : " << argv[2] << endl;
+cout << " \t Training file : " << train_file << endl;
+cout << " \t Testing  file : " << test_file << endl;
+cout << " \t Theta  file : " << theta_file << endl;
 cout << " \t max_it = " << max_it << endl;
 cout << " \t tau    = " << tau    << endl;
 
@@ -61,7 +74,7 @@ tic();
 // read TRAINING CSV file
 FLOAT_TYPE **CSV=nullptr;
 unsigned int CSV_m, CSV_n;
-loadCSV_to_matrix( argv[1], &CSV,  &CSV_m, &CSV_n);
+loadCSV_to_matrix( train_file, &CSV,  &CSV_m, &CSV_n);
 
 // Extract features X and labels y
 unsigned int m = CSV_m;
@@ -74,7 +87,7 @@ extract_labels_from_CSV  ( y, CSV, CSV_m );
 destroy( &CSV, CSV_m);
 
 // Read TESTING CSV file
-loadCSV_to_matrix( argv[2], &CSV,  &CSV_m, &CSV_n);
+loadCSV_to_matrix( test_file, &CSV,  &CSV_m, &CSV_n);
 
 // Extract features test_X and labels test_y
 unsigned int test_m = CSV_m;
@@ -94,6 +107,7 @@ cout << "Reading and initialization time : " << duration() << "s " << endl;
 
 // Training
 FLOAT_TYPE cumulative_error;
+FLOAT_TYPE max_acc = 0;
 zeros(Theta, 10, n);
 
 for(unsigned int k=0; k < max_it; k++)
@@ -127,9 +141,20 @@ for(unsigned int k=0; k < max_it; k++)
     tac();
     cout << "it : " << k << "\t time : " << duration() << " s\t error : "<< cumulative_error/(10*m);
 	// modify below for question 5.2.5
-	
+    FLOAT_TYPE acc = Accuracy(Theta, test_X, test_y, m, n)*100;
+    if((k%5) == 0){
+        cout << "\taccuracy : "<<acc;
+    }
+    if(max_acc < acc){
+        saveTheta(theta_file, Theta, 10, n);
+        cout << "\tmax : "<<acc;
+        max_acc = acc;
+    }
     cout << endl;
     }
+
+unsigned int linesT, colsT;
+readTheta(theta_file, Theta, &linesT, &colsT);
 
 
 
@@ -154,10 +179,8 @@ if( test_y[test_index] == c_prob ) cout << "  Good prediction :) !!" << endl;
 else cout << " Prediction error :( !!" << endl;
 print(prob, 10, " probabilities : ");
 
-
-
-
-
+FLOAT_TYPE acc = Accuracy(Theta, test_X, test_y, m, n)*100;
+cout << "Precision globale : " << acc << endl;
 
 // free memory
 destroy( &prob   );
