@@ -34,7 +34,7 @@ FLOAT_TYPE Accuracy(FLOAT_TYPE **Theta, FLOAT_TYPE **test_X, FLOAT_TYPE *test_y,
         unsigned int c_prob = 0;
         prob[0] = g( dot_product( Theta[0], test_X[line], nb_cols ) );
         max_prob = prob[0];
-        for(unsigned int c=1; c<10; c++)
+        for(unsigned int c=0; c<10; c++)
         {
             prob[c] = g( dot_product( Theta[c], test_X[line], nb_cols ) );
             if( max_prob < prob[c])
