@@ -31,7 +31,7 @@ Exemple, si vos sources sont dans /home/tgrenier/clanu/LR_MNIST
 	
 3. Troisièmement, initialiser le projet en exécutant cmake.
 
-+	Sous windows et sous linux, une interface graphique est disponible. Il faudra que le chemin vers le "source code" soit le chemin du répertoire contenant le CMakeFile.txt du projet.
++	Sous windows et sous linux, une interface graphique est disponible. Il faudra que le chemin vers le "source code" soit le chemin du répertoire contenant le CMakeLists.txt du projet.
 	Dans l'exemple précédent : /home/tgrenier/clanu/LR_MNIST
 	Puis le répertoire "where to build the binaries" sera le répertoire créé précédement: 
 	/home/tgrenier/clanu/LR_MNIST-Build

@@ -55,7 +55,7 @@ accuracies = struct;
 for method = methods
     fprintf('\n\n\nTraining Logistic Regression with %s gradient descent methode depending on iteration number...\n\n\n', method);
 
-    accuracy=zeros(1,10);
+    accuracy=zeros(1,stepsIter);
     for i=1:stepsIter
         maxIter=fromIter+(i-1)*((toIter-fromIter)/(stepsIter-1));
         fprintf('\n\nCurrently: %4i\n\n', maxIter);

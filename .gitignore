@@ -7,3 +7,6 @@ LR_MNIST/html/*
 LR_MNIST/data/*
 
 code_matlab/data/*
+
+*build*
+*Build*

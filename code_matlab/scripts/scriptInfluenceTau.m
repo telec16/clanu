@@ -55,7 +55,7 @@ accuracies = struct;
 for method = methods
     fprintf('\n\n\nTraining Logistic Regression with %s gradient descent methode depending on learning rate coefficient...\n\n\n', method);
 
-    accuracy=zeros(1,10);
+    accuracy=zeros(1, stepsTau);
     for i=1:stepsTau
         tau=fromTau+(i-1)*((toTau-fromTau)/(stepsTau-1));
         fprintf('\n\nCurrently: %4i\n\n', tau);

@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+D:/INSA/CLANU/LR_MNIST/lib/common_functions.h
+algorithm
+-
+cmath
+-
+
+D:/INSA/CLANU/LR_MNIST/test/test_common_functions.cpp
+iostream
+-
+string
+-
+ctime
+-
+ratio
+-
+chrono
+-
+cmath
+-
+common_functions.h
+D:/INSA/CLANU/LR_MNIST/test/common_functions.h
+

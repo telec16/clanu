@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+D:/INSA/CLANU/LR_MNIST/lib/clanu_functions.h
+string
+-
+cstdio
+-
+cstdlib
+-
+
+D:/INSA/CLANU/LR_MNIST/lib/common_functions.h
+algorithm
+-
+cmath
+-
+
+D:/INSA/CLANU/LR_MNIST/lib/timing_functions.h
+ctime
+-
+ratio
+-
+chrono
+-
+
+D:/INSA/CLANU/LR_MNIST/src/mnist_train_lrgd.cpp
+iostream
+-
+omp.h
+-
+common_functions.h
+D:/INSA/CLANU/LR_MNIST/src/common_functions.h
+clanu_functions.h
+D:/INSA/CLANU/LR_MNIST/src/clanu_functions.h
+timing_functions.h
+D:/INSA/CLANU/LR_MNIST/src/timing_functions.h
+
