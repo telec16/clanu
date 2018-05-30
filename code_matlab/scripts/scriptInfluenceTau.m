@@ -8,7 +8,7 @@ addpath('../');
 fromTau = 0.01; %-- gradient descent: start number of learning rate coefficient 
 stepsTau = 10;  %-- gradient descent: step number of learning rate coefficient
 toTau = 2.5;    %-- gradient descent: end number of learning rate coefficient
-epsilon = 0;    %-- gradient descent: convergence thresholder
+epsilon = 0.01;    %-- gradient descent: convergence thresholder
 maxIter = 40;   %-- gradient descent: iterations
 methods = ["simple", "conjugate"];
  
