@@ -95,9 +95,9 @@ cout << "Reading and initialization time : " << duration() << "s " << endl;
 FLOAT_TYPE cumulative_error;
 zeros(Theta, 10, n);
 FLOAT_TYPE **grad_J=nullptr; allocate(&grad_J,10,n); // (Used as memory) Create and allocate the gradient of J (vector of n elements) for each iteration (10)
-FLOAT_TYPE *d_k=nullptr; allocate(&d_k,10); // (Used as memory) Create and allocate the direction d for each column
+FLOAT_TYPE **d_k=nullptr; allocate(&d_k,10,n); // (Used as memory) Create and allocate the direction d for each column
 zeros(grad_J, 10, n);
-zeros(d_k,10);
+zeros(d_k,10,n);
 
 for(unsigned int k=0; k < max_it; k++)
     {
@@ -111,7 +111,8 @@ for(unsigned int k=0; k < max_it; k++)
         FLOAT_TYPE *theta_c_k = Theta[c];                    //  linked on Theta, for easier reading
         FLOAT_TYPE *d_c_k=nullptr; allocate(&d_c_k,n);       // ( definied and allocated here for concurrency )
         FLOAT_TYPE *grad_J_c_k=nullptr; allocate(&grad_J_c_k,n); // create and allocate gradient of J for one column
-        FLOAT TYPE beta_c_k; // define beta for one column and one iteration
+        FLOAT_TYPE *temp=nullptr; allocate(&temp,n); // define a temporary variable
+        FLOAT_TYPE beta_c_k; // define beta for one column and one iteration
         zeros( d_c_k, n);                               // d_c_k = {0,0,0...} i.e. initialization
         for(unsigned int i=0; i<m; i++)
             {
@@ -126,19 +127,19 @@ for(unsigned int k=0; k < max_it; k++)
             cumulative_error += abs(h_theta_c_i);            // ( used for evolution tracking )
             }
         mul_v_s( grad_J_c_k, d_c_k, 1.0/m, n);			//  grad_J_c_k = dck * 1/m -> gradient of J(theta c,k)
-        sub_2_v(beta_c_k,grad_J_c_k,grad_J[c],n); // store temporary the subtraction of gradient and old gradient in beta_c_k
-        beta_c_k= dot_product(beta_c_k,grad_J_c_k,n)/norm_v_sqr(grad_J[c],n); // calculate the coefficient beta_c_k
-        copy(gradJ[c],grad_J_c_k,n); // gradJ[c]=grad_J_c_k
+        sub_2v(temp,grad_J_c_k,grad_J[c],n); // store temporary the subtraction of gradient and old gradient in beta_c_k
+        beta_c_k= dot_product(temp,grad_J_c_k,n)/norm_v_sqr(grad_J[c],n); // calculate the coefficient beta_c_k
+        copy(grad_J[c],grad_J_c_k,n); // gradJ[c]=grad_J_c_k
         mul_v_s(grad_J_c_k,grad_J_c_k,-1.0, n); // store minus grad in grad
         mul_v_s(d_k[c],d_k[c],beta_c_k,n); // store d_k(-1)*beta_c_k in d_k[c]
-        sum_2_v(d_c_k,grad_J_c_k,d_k[c],n);
+        sum_2v(d_c_k,grad_J_c_k,d_k[c],n);
                 
         //mul_v_s( d_c_k, d_c_k, -tau / m,     n);        //  d_c_k *= - tau / m
         
         sum_2v( theta_c_k, theta_c_k, d_c_k, n);        //  theta_c_k+1 = theta_c_k + d_c_k
         d_k[c]=d_c_k; // put d_c_k in memory
         destroy(&d_c_k);
-        destroy(&J_c_k);                                // ( free d_c_k )
+        //destroy(&J_c_k);                                // ( free d_c_k )
         }
     tac();
     cout << "it : " << k << "\t time : " << duration() << " s\t error : "<< cumulative_error/(10*m);
@@ -185,24 +186,7 @@ destroy( &X, m     );
 destroy( &test_X, test_m );
 
 destroy( &grad_J, 10);
-destroy( &d_k);
-
-cout << " end." << endl;
-return 0;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+destroy( &d_k, 10);
 
 cout << " end." << endl;
 return 0;
