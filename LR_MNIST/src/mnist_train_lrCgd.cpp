@@ -100,58 +100,65 @@ int main(int argc, char *argv[])
 	FLOAT_TYPE cumulative_error;
     FLOAT_TYPE max_acc = 0;
 	zeros(Theta, 10, n);
-	FLOAT_TYPE **grad_J=nullptr; allocate(&grad_J,10,n); // (Used as memory) Create and allocate the gradient of J (vector of n elements) for each iteration (10)
-	FLOAT_TYPE **d_k=nullptr; allocate(&d_k,10,n); // (Used as memory) Create and allocate the direction d for each column
-	zeros(grad_J, 10, n);
-	zeros(d_k,10,n);
+    FLOAT_TYPE **grad_J=nullptr; allocate(&grad_J,10,n);                    // (Used as memory) Create and allocate the gradient of J (vector of n elements) for each digit (10)
+    FLOAT_TYPE **d_k=nullptr; allocate(&d_k,10,n);                          // (Used as memory) Create and allocate the direction d for each digit
+    FLOAT_TYPE **beta_k=nullptr; allocate(&beta_k,10,n);                    // (Used as memory) Create and allocate the direction beta for each digit
+    zeros(grad_J, 10, n);
+    zeros(d_k,10,n);
+    zeros(beta_k,10,n);
 
 	// Training : k iterations
 	for(unsigned int k=0; k < max_it; k++)
 	{
 		cumulative_error = 0;
 		tic();
-	#if defined(_OPENMP)
-		#pragma omp parallel for reduction(+:cumulative_error)  			// Concurrency (or parallel) for loop
-	#endif
-		// Training : c column
+#if defined(_OPENMP)
+    #pragma omp parallel for reduction(+:cumulative_error)  			// Concurrency (or parallel) for loop
+#endif
+        // Training : c digits
 		for(unsigned int c=0; c<10; c++)
-		{
-			FLOAT_TYPE *theta_c_k = Theta[c];                    			//  linked on Theta, for easier reading
-			FLOAT_TYPE *d_c_k=nullptr; allocate(&d_c_k,n);       			// ( definied and allocated here for concurrency )
-			FLOAT_TYPE *grad_J_c_k=nullptr; allocate(&grad_J_c_k,n); 		// create and allocate gradient of J for one column
-			FLOAT_TYPE *temp=nullptr; allocate(&temp,n); 					// define a temporary variable
-			FLOAT_TYPE beta_c_k; 											// define beta for one column and one iteration
-			zeros( d_c_k, n);
+        {
+            FLOAT_TYPE *theta_c_k = Theta[c];                    		//  linked on Theta, for easier reading
+            FLOAT_TYPE *d_c_k=nullptr; allocate(&d_c_k,n);       		// ( definied and allocated here for concurrency )
+            FLOAT_TYPE *grad_J_c_k=nullptr; allocate(&grad_J_c_k,n); 	// create and allocate gradient of J for one column
+            FLOAT_TYPE *temp=nullptr; allocate(&temp,n); 				// define a temporary variable
+            FLOAT_TYPE beta_c_k;                                        // d_c_k = {0,0,0...} i.e. initialization
 			
-			// Training : i lines                               				// d_c_k = {0,0,0...} i.e. initialization
+            /*- GRAD(J) -*/
+            //grad_J_c_k = sum(X .* (sigmoid(X * theta_c_k)-y_c_i))
+#if defined(_OPENMP)
+    #pragma omp parallel for reduction(+:cumulative_error)  			// Concurrency (or parallel) for loop
+#endif
 			for(unsigned int i=0; i<m; i++)
 			{
-				FLOAT_TYPE y_c_i = (y[i]==c)?1.0:0.0;            			// y_c_i = 1 if y[i] == c, 0  otherwise
-
+                FLOAT_TYPE y_c_i = (y[i]==c)?1.0:0.0;            		// y_c_i = 1 if y[i] == c, 0  otherwise
 				FLOAT_TYPE h_theta_c_i =
-						g( dot_product( theta_c_k, X[i], n ) ) - y_c_i; 	// h_theta_c_i = g( theta_c_k . X[i] ) - y_c_i
+                        g( dot_product( theta_c_k, X[i], n ) ) - y_c_i; // h_theta_c_i = g( theta_c_k . X[i] ) - y_c_i
+                mac_v_v_s( grad_J_c_k, X[i], h_theta_c_i, n );    		//  grad_J_c_k += X[i] * h_theta_c_i
 
-				mac_v_v_s( d_c_k, X[i], h_theta_c_i, n );    				//  d_c_k += X[i] * h_theta_c_i
-
-				cumulative_error += abs(h_theta_c_i);            			// ( used for evolution tracking )
+                cumulative_error += abs(h_theta_c_i);            		// ( used for evolution tracking )
 			}
+            mul_v_s( grad_J_c_k, grad_J_c_k, 1.0/m, n);					// grad_J_c_k = grad_J_c_k * 1/m -> gradient of J(theta c,k)
+
+            /*- BETA -*/
+            //beta_c_k = (grad(J_c_k) . (grad(J_c_k)-grad(J_c_k-1))) / (norm(grad(J_c_k-1))^2)
+            sub_2v(temp,grad_J_c_k,grad_J[c],n); 						// temp = grad(J_c_k) - grad(J_c_k-1)
+            beta_c_k  = dot_product(grad_J_c_k,temp,n);                 // beta_c_k = grad(J_c_k) . temp
+            beta_c_k /= norm_v_sqr(grad_J[c],n);                        // beta_c_k = beta_c_k/sum(grad(J_c_k-1)^2)
+            memcpy(grad_J[c], grad_J_c_k, sizeof(FLOAT_TYPE) * n);		// grad(J_c_k-1) = grad(J_c_k)
 			
-			// Training : calculate the gradient of J and the direction of descent
-			mul_v_s( grad_J_c_k, d_c_k, 1.0/m, n);							// grad_J_c_k = dck * 1/m -> gradient of J(theta c,k)
-			sub_2v(temp,grad_J_c_k,grad_J[c],n); 							// store temporary the subtraction of gradient and old gradient in beta_c_k
-			beta_c_k=dot_product(temp,grad_J_c_k,n)/norm_v_sqr(grad_J[c],n);// calculate the coefficient beta_c_k
-			memcpy(grad_J[c], grad_J_c_k, sizeof(FLOAT_TYPE) * n);			// gradJ[c]=grad_J_c_k
-			
-			mul_v_s(grad_J_c_k,grad_J_c_k,-1.0, n); 						// store minus grad in grad
-			mul_v_s(d_k[c],d_k[c],beta_c_k,n); 								// store d_k(-1)*beta_c_k in d_k[c]
-			sum_2v(d_c_k,grad_J_c_k,d_k[c],n);								// calculate direction of descent
-			mul_v_s(d_c_k,d_c_k,tau,n);										// multiply direction by tau
-			
-			// Training : update Theta
-			sum_2v( theta_c_k, theta_c_k, d_c_k, n);        				//  theta_c_k+1 = theta_c_k + tau * d_c_k
-			d_k[c]=d_c_k; 	
-															// put d_c_k in memory
-			destroy(&d_c_k);
+            /*- DIRECTION -*/
+            //d_c_k = (beta_c_k * d_c_k-1) - grad(J_c_k)
+            mul_v_s(d_c_k, d_k[c], beta_c_k,n);                         // d_c_k = beta_c_k * d_c_k-1
+            sub_2v(d_c_k,d_c_k,grad_J_c_k,n);                           // d_c_k = d_c_k - grad(J_c_k)
+            memcpy(d_k[c], d_c_k, sizeof(FLOAT_TYPE) * n);              // d_c_k-1 = d_c_k
+
+            /*- UPDATING THETA -*/
+            //theta_c_k = theta_c_k + tau * d_c_k
+            mul_v_s(d_c_k,d_c_k,tau,n);									// d_c_k = tau * d_c_k
+            sum_2v( theta_c_k, theta_c_k, d_c_k, n);        			// theta_c_k = theta_c_k + d_c_k
+
+            destroy(&d_c_k);
 			destroy(&grad_J_c_k);
 			destroy(&temp);                           			
 		}
@@ -165,6 +172,7 @@ int main(int argc, char *argv[])
         }
         if(max_acc < acc)
         {
+            //saveTheta("grad.csv", grad_J, 10, n);
             saveTheta(theta_file, Theta, 10, n);
             cout << "\tmax : "<<acc;
             max_acc = acc;

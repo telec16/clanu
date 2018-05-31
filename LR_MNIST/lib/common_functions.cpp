@@ -171,7 +171,7 @@ bool allocate(FLOAT_TYPE ***M, unsigned int m, unsigned int n)
 bool destroy(FLOAT_TYPE ***M, unsigned int m)
 {
 	if( *M != nullptr )
-		{
+    {
 #if defined(_OPENMP)
     #pragma omp parallel for
 #endif
@@ -180,7 +180,7 @@ bool destroy(FLOAT_TYPE ***M, unsigned int m)
 		delete[] *M;
 		*M = nullptr;
         return true;
-		}
+    }
     return false;
 }
 
