@@ -44,6 +44,12 @@ inline FLOAT_TYPE g(FLOAT_TYPE s)
 //! compute square distance of scalar \param x and \param y
 inline FLOAT_TYPE distsq(FLOAT_TYPE x, FLOAT_TYPE y);
 
+//! normalization of the vector v
+void normalize(FLOAT_TYPE *v, unsigned int n);
+
+//! normalization of the m by n matrix M
+void normalize(FLOAT_TYPE **M, unsigned int m, unsigned int n);
+
 //! Compute the squared norm of one vector $r = ||v||^2$
 FLOAT_TYPE norm_v_sqr( FLOAT_TYPE *v, unsigned int n);
 

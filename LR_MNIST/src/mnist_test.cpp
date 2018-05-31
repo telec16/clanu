@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <cstring>
 #include <windows.h>   // WinApi header
 #include <iomanip>
 #define FLOAT_TYPE float
@@ -18,7 +19,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    if( argc < 3)
+    if( argc < 4)
     {
         cerr << " Usage : " << argv[0] << " data\\path Test_filename.csv Theta.csv" << endl;
         return -1;
@@ -53,6 +54,7 @@ int main(int argc, char *argv[])
     extract_features_from_CSV( X, CSV, CSV_m, CSV_n );
     extract_labels_from_CSV  ( y, CSV, CSV_m );
     destroy( &CSV, CSV_m);
+    normalize(X, CSV_m, CSV_n);
 
     // Allocate Theta variable
     FLOAT_TYPE **Theta=nullptr; allocate(&Theta, 10, n);

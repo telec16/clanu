@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.5.0, 2018-05-31T10:34:30. -->
+<!-- Written by QtCreator 4.5.0, 2018-05-31T18:00:16. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -1918,7 +1918,7 @@
      <value type="int">14</value>
     </valuelist>
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguation.Title">mnist_test</value>
-    <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.Arguments">&quot;D:\INSA\CLANU\LR_MNIST\data\\&quot; &quot;mnist_test.csv&quot;</value>
+    <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.Arguments">&quot;D:\INSA\CLANU\LR_MNIST\data\\&quot; &quot;mnist_test.csv&quot; &quot;Theta.csv&quot;</value>
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.UserWorkingDirectory"></value>
     <value type="QString" key="CMakeProjectManager.CMakeRunConfiguration.UserWorkingDirectory.default">D:/INSA/CLANU/build-LR_MNIST-Imported_Kit_temporaire-Release/src</value>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>

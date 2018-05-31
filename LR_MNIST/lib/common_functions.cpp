@@ -46,6 +46,21 @@ inline FLOAT_TYPE distsq(FLOAT_TYPE x, FLOAT_TYPE y)
 }
 
 
+// normalization of the vector v
+void normalize(FLOAT_TYPE *v, unsigned int n)
+{
+    for (unsigned int i=0; i<n ; i++)
+        v[i] /= 255.0;
+}
+// normalization of the m by n matrix M
+void normalize(FLOAT_TYPE **M, unsigned int m, unsigned int n)
+{
+    for(unsigned int i=0; i<m; ++i)
+        for(unsigned int j=0; j<n; ++j)
+            M[i][j] /= 255.0;
+}
+
+
 // Compute the squared norm of one vector r = ||v||²
 FLOAT_TYPE norm_v_sqr( FLOAT_TYPE *v, unsigned int n)
 {
@@ -179,7 +194,7 @@ void copy(FLOAT_TYPE *u, const FLOAT_TYPE *v, unsigned int n)
 void zeros( FLOAT_TYPE **M, unsigned int m, unsigned int n )
 {
     for(unsigned int i=0; i<m; ++i)
-        for(unsigned int j=1; j<n; ++j)
+        for(unsigned int j=0; j<n; ++j)
             M[i][j] = 0.0;
 }
 
@@ -195,7 +210,7 @@ void zeros( FLOAT_TYPE *v, unsigned int n )
 void ones(FLOAT_TYPE **M, unsigned int m, unsigned int n )
 {
     for(unsigned int i=0; i<m; ++i)
-        for(unsigned int j=1; j<n; ++j)
+        for(unsigned int j=0; j<n; ++j)
             M[i][j] = 1.0;
 }
 

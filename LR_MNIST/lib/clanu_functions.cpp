@@ -79,10 +79,10 @@ void readTheta (char *fileName, FLOAT_TYPE **theta, unsigned int *nbLinesTheta, 
     std::string delimiter = ","; // set the character used as separator
     ifstream file(fileName);     // set filename to the stream
     if (file.is_open() != true ) // try to open the file
-        {						 // if trouble return with error message
+    {                            // if trouble return with error message
         cerr << " ** can't open file : " << fileName << endl;
         return;
-        }
+    }
 
     string line;				//else : start file the analysis
     std::vector< string > lines;

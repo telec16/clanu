@@ -13,7 +13,7 @@
 #include "timing_functions.h"
 
 #include <stdio.h>
-#include <string.h>
+#include <cstring>
 
 using namespace std;
 
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
     unsigned int CSV_m, CSV_n;
     loadCSV_to_matrix( train_file, &CSV,  &CSV_m, &CSV_n);
 
-    // Extract features X and labels y
+    // Extract features X and labels y and NORMALIZE THEM
     unsigned int m = CSV_m;
     unsigned int n = CSV_n - 1; // the first column contains the labels
     FLOAT_TYPE **X = nullptr; allocate( &X, m, n);
@@ -80,11 +80,13 @@ int main(int argc, char *argv[])
     extract_features_from_CSV( X, CSV, CSV_m, CSV_n );
     extract_labels_from_CSV  ( y, CSV, CSV_m );
     destroy( &CSV, CSV_m);
+    normalize(X, CSV_m, CSV_n);
 
     // Read TESTING CSV file
+    CSV=nullptr;
     loadCSV_to_matrix( test_file, &CSV,  &CSV_m, &CSV_n);
 
-    // Extract features test_X and labels test_y
+    // Extract features test_X and labels test_y and NORMALIZE THEM
     unsigned int test_m = CSV_m;
     FLOAT_TYPE **test_X = nullptr; allocate( &test_X, m, n);
     FLOAT_TYPE  *test_y = nullptr; allocate( &test_y, m);
@@ -92,6 +94,7 @@ int main(int argc, char *argv[])
     extract_features_from_CSV( test_X, CSV, test_m, CSV_n );
     extract_labels_from_CSV  ( test_y, CSV, test_m );
     destroy( &CSV, CSV_m);
+    normalize(test_X, test_m, CSV_n);
 
 
     // Allocate Theta variable

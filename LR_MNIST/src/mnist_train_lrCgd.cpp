@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
 
 	// Training : Defined variables
 	FLOAT_TYPE cumulative_error;
+    FLOAT_TYPE max_acc = 0;
 	zeros(Theta, 10, n);
 	FLOAT_TYPE **grad_J=nullptr; allocate(&grad_J,10,n); // (Used as memory) Create and allocate the gradient of J (vector of n elements) for each iteration (10)
 	FLOAT_TYPE **d_k=nullptr; allocate(&d_k,10,n); // (Used as memory) Create and allocate the direction d for each column
