@@ -144,9 +144,10 @@ int main(int argc, char *argv[])
 			mul_v_s(grad_J_c_k,grad_J_c_k,-1.0, n); 						// store minus grad in grad
 			mul_v_s(d_k[c],d_k[c],beta_c_k,n); 								// store d_k(-1)*beta_c_k in d_k[c]
 			sum_2v(d_c_k,grad_J_c_k,d_k[c],n);								// calculate direction of descent
+			mul_v_s(d_c_k,d_c_k,tau,n);										// multiply direction by tau
 			
 			// Training : update Theta
-			sum_2v( theta_c_k, theta_c_k, d_c_k, n);        				//  theta_c_k+1 = theta_c_k + d_c_k
+			sum_2v( theta_c_k, theta_c_k, d_c_k, n);        				//  theta_c_k+1 = theta_c_k + tau * d_c_k
 			d_k[c]=d_c_k; 	
 															// put d_c_k in memory
 			destroy(&d_c_k);
