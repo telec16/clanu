@@ -10,6 +10,7 @@
 #include "common_functions.h"
 #include "clanu_functions.h"
 #include "timing_functions.h"
+#include <string.h>
 
 
 
@@ -37,21 +38,30 @@ int main(int argc, char *argv[])
 FLOAT_TYPE tau;
 unsigned int max_it;
 
-if( argc < 5)
+cout << "argc:" << argc <<endl;
+if( argc < 7)
     {
-        cerr << " Usage : " << argv[0] << " Train_filename.csv Test_filename.csv max_it tau" << endl;
+        cerr << " Usage : " << argv[0] << " data\\path Train_filename.csv Test_filename.csv Theta.csv max_it tau" << endl;
         return -1;
     }
 
-max_it = stoul( argv[3] );
-tau    = stof ( argv[4] );
+char train_file[50] = {0};
+char test_file[50]  = {0};
+char theta_file[50] = {0};
+
+strcat(train_file, argv[1]);strcat(train_file, argv[2]);
+strcat(test_file , argv[1]);strcat(test_file , argv[3]);
+strcat(theta_file, argv[1]);strcat(theta_file, argv[4]);
+
+max_it = stoul( argv[5] );
+tau    = stof ( argv[6] );
 // Summarizing options
 cout << " ** summarize options : " << endl;
-cout << " \t Training file : " << argv[1] << endl;
-cout << " \t Testing  file : " << argv[2] << endl;
+cout << " \t Training file : " << train_file << endl;
+cout << " \t Testing  file : " << test_file << endl;
+cout << " \t Theta  file : " << theta_file << endl;
 cout << " \t max_it = " << max_it << endl;
 cout << " \t tau    = " << tau    << endl;
-
 
 
 cout << "Reading and initializing ... This may take a while (~20-30s) " << endl;
@@ -60,7 +70,7 @@ tic();
 // read TRAINING CSV file
 FLOAT_TYPE **CSV=nullptr;
 unsigned int CSV_m, CSV_n;
-loadCSV_to_matrix( argv[1], &CSV,  &CSV_m, &CSV_n);
+loadCSV_to_matrix( train_file, &CSV,  &CSV_m, &CSV_n);
 
 // Extract features X and labels y
 unsigned int m = CSV_m;
@@ -73,7 +83,7 @@ extract_labels_from_CSV  ( y, CSV, CSV_m );
 destroy( &CSV, CSV_m);
 
 // Read TESTING CSV file
-loadCSV_to_matrix( argv[2], &CSV,  &CSV_m, &CSV_n);
+loadCSV_to_matrix( test_file, &CSV,  &CSV_m, &CSV_n);
 
 // Extract features test_X and labels test_y
 unsigned int test_m = CSV_m;
@@ -129,7 +139,7 @@ for(unsigned int k=0; k < max_it; k++)
         mul_v_s( grad_J_c_k, d_c_k, 1.0/m, n);			//  grad_J_c_k = dck * 1/m -> gradient of J(theta c,k)
         sub_2v(temp,grad_J_c_k,grad_J[c],n); // store temporary the subtraction of gradient and old gradient in beta_c_k
         beta_c_k= dot_product(temp,grad_J_c_k,n)/norm_v_sqr(grad_J[c],n); // calculate the coefficient beta_c_k
-        copy(grad_J[c],grad_J_c_k,n); // gradJ[c]=grad_J_c_k
+        memcpy(grad_J[c], grad_J_c_k, sizeof(FLOAT_TYPE) * n);//copy(grad_J[c],grad_J_c_k,n); // gradJ[c]=grad_J_c_k
         mul_v_s(grad_J_c_k,grad_J_c_k,-1.0, n); // store minus grad in grad
         mul_v_s(d_k[c],d_k[c],beta_c_k,n); // store d_k(-1)*beta_c_k in d_k[c]
         sum_2v(d_c_k,grad_J_c_k,d_k[c],n);

@@ -61,7 +61,8 @@ FLOAT_TYPE norm_2v_sqr( const FLOAT_TYPE *v1, const FLOAT_TYPE *v2, unsigned int
 {
     FLOAT_TYPE norm ( 0.0 );
 #if defined(_OPENMP)
-    #pragma omp parallel for reduction(+:norm) schedule(static, 5) //#pragma omp parallel for simd reduction(+:norm) schedule(simd:static, 5)
+    //#pragma omp parallel for reduction(+:norm) schedule(static, 5)
+    #pragma omp parallel for simd reduction(+:norm) schedule(simd:static, 5)
 #endif
     for (unsigned int i=0; i<n ; i++)
             norm += distsq( v1[i], v2[i]) ;
