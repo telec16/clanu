@@ -1,7 +1,7 @@
 // T. Grenier - Clanu 2017-2018 - INSA Lyon - GE
 
 ///////////////////////////////////////////////////////////
-//           DO NOT MODIFY THIS FILE                     //
+//           DO NOT MODIFY THIS FILE                     // Woops ¯\_(ツ)_/¯
 ///////////////////////////////////////////////////////////
 
 #ifndef _timing_functions_h

@@ -5,6 +5,8 @@
 *.csv
 !theta*
 
+!*.exe
+
 LR_MNIST/html/*
 
 code_matlab/data/*

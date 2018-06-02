@@ -36,11 +36,12 @@ int main(int argc, char *argv[])
     FLOAT_TYPE tau_step;
     FLOAT_TYPE tau_end;
     unsigned int max_it;
+    unsigned int conjugate_gradient;
 
     cout << "argc:" << argc <<endl;
-    if( argc < 9)
+    if( argc < 10)
     {
-        cerr << " Usage : " << argv[0] << " data\\path Train_filename.csv Test_filename.csv Theta_filename max_it tau_start tau_step tau_end" << endl;
+        cerr << " Usage : " << argv[0] << " data\\path Train_filename.csv Test_filename.csv Theta_filename max_it tau_start tau_step tau_end method" << endl;
         return -1;
     }
 
@@ -56,6 +57,11 @@ int main(int argc, char *argv[])
     tau_start   = stof ( argv[6] );
     tau_step    = stof ( argv[7] );
     tau_end     = stof ( argv[8] );
+
+    if(strcmp(argv[4],"conjugate_gradient")==0)     // Using the conjugate gradient when specifying "conjugate_gradient" and the simple method in every other cases
+        conjugate_gradient=1;
+
+
     // Summarizing options
     cout << " ** summarize options : " << endl;
     cout << " \t Training file : " << train_file << endl;
@@ -63,6 +69,11 @@ int main(int argc, char *argv[])
     cout << " \t Theta  file : " << theta_file << endl;
     cout << " \t max_it = " << max_it << endl;
     cout << " \t tau    = " << tau_start << ":" << tau_step << ":" << tau_end << endl;
+    if(conjugate_gradient){
+        cout<<"Conjugate gradient method. Specify ""simple"" to use the simple method."<<endl;
+    } else {
+        cout<<"Simple gradient descent. Specify ""conjugate_gradient"" to use the said method."<<endl;
+    }
 
     cout << "Reading and initializing ... This may take a while (~20-30s) " << endl;
     tic();
@@ -80,6 +91,7 @@ int main(int argc, char *argv[])
 
     extract_features_from_CSV( X, CSV, CSV_m, CSV_n );
     extract_labels_from_CSV  ( y, CSV, CSV_m );
+    normalize(X, CSV_m, CSV_n);
     destroy( &CSV, CSV_m);
 
     // Read TESTING CSV file
@@ -92,6 +104,7 @@ int main(int argc, char *argv[])
 
     extract_features_from_CSV( test_X, CSV, test_m, CSV_n );
     extract_labels_from_CSV  ( test_y, CSV, test_m );
+    normalize(test_X, CSV_m, CSV_n);
     destroy( &CSV, CSV_m);
 
 
@@ -153,12 +166,17 @@ int main(int argc, char *argv[])
                 }
                 mul_v_s( grad_J_c_k, grad_J_c_k, 1.0/m, n);					// grad_J_c_k = grad_J_c_k * 1/m -> gradient of J(theta c,k)
 
-                /*- BETA -*/
-                //beta_c_k = (grad(J_c_k) . (grad(J_c_k)-grad(J_c_k-1))) / (norm(grad(J_c_k-1))^2)
-                sub_2v(temp,grad_J_c_k,grad_J[c],n); 						// temp = grad(J_c_k) - grad(J_c_k-1)
-                beta_c_k  = dot_product(grad_J_c_k,temp,n);                 // beta_c_k = grad(J_c_k) . temp
-                beta_c_k /= norm_v_sqr(grad_J[c],n);                        // beta_c_k = beta_c_k/sum(grad(J_c_k-1)^2)
-                memcpy(grad_J[c], grad_J_c_k, sizeof(FLOAT_TYPE) * n);		// grad(J_c_k-1) = grad(J_c_k)
+                if(conjugate_gradient)
+                {
+                    /*- BETA -*/
+                    //beta_c_k = (grad(J_c_k) . (grad(J_c_k)-grad(J_c_k-1))) / (norm(grad(J_c_k-1))^2)
+                    sub_2v(temp,grad_J_c_k,grad_J[c],n);                    // temp = grad(J_c_k) - grad(J_c_k-1)
+                    beta_c_k  = dot_product(grad_J_c_k,temp,n);             // beta_c_k = grad(J_c_k) . temp
+                    beta_c_k /= norm_v_sqr(grad_J[c],n);                    // beta_c_k = beta_c_k/sum(grad(J_c_k-1)^2)
+                    memcpy(grad_J[c], grad_J_c_k, sizeof(FLOAT_TYPE) * n);  // grad(J_c_k-1) = grad(J_c_k)
+                } else {
+                    beta_c_k=0;
+                }
 
                 /*- DIRECTION -*/
                 //d_c_k = (beta_c_k * d_c_k-1) - grad(J_c_k)
@@ -190,16 +208,14 @@ int main(int argc, char *argv[])
             if(max_acc < acc)
             {
                 saveTheta("temp", Theta, 10, n);
-                //copy_M(Theta_max, Theta, m, n);
+                //copy_M(&Theta_max, &Theta, m, n);
                 cout << "\tmax : "<<acc;
                 max_acc = acc;
             }
             cout << endl;
         }
-        unsigned int linesT, colsT;
-        readTheta("temp", Theta_max, &linesT, &colsT);
 
-        FLOAT_TYPE facc = Accuracy(Theta_max, test_X, test_y, m, n)*100;
+        FLOAT_TYPE facc = max_acc; //Accuracy(Theta_max, test_X, test_y, m, n)*100;
         cout << "Final accurracy : " << facc << endl;
 
         char file[80] = {0};

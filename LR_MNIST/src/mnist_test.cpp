@@ -19,9 +19,11 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-    if( argc < 4)
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(hConsole, COLOR_RESET);
+    if( argc < 5)
     {
-        cerr << " Usage : " << argv[0] << " data\\path Test_filename.csv Theta_filename.csv" << endl;
+        cerr << " Usage : " << argv[0] << " data\\path Test_filename.csv Theta_filename.csv Affichage_On/Off" << endl;
         return -1;
     }
 
@@ -31,10 +33,15 @@ int main(int argc, char *argv[])
     strcat(test_file , argv[1]);strcat(test_file , argv[2]);
     strcat(theta_file, argv[1]);strcat(theta_file, argv[3]);
 
+    int display_is_on=0;
+    if(strcmp(argv[4],"On")==0)     // Display is active when the 5th parameter is "On", not active in every other cases
+        display_is_on=1;
+
     // Summarizing options
     cout << " ** summarize options : " << endl;
     cout << " \t Testing  file : " << test_file << endl;
     cout << " \t Theta  file : " << theta_file << endl;
+
 
 
     cout << "Reading and initializing ... This may take a while (~20-30s) " << endl;
@@ -64,8 +71,14 @@ int main(int argc, char *argv[])
     tac();
     cout << "Reading and initialization time : " << duration() << "s " << endl;
 
+    if(display_is_on)
+    {
+        cout<<"Display is active, specify ""off"" to avoid displaying all lines."<<endl;
+    } else {
+        cout<<"Display is not active. Specify ""on"" to display all lines."<<endl;
+    }
 
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
     int color;
 
     FLOAT_TYPE avg = 0;;
@@ -89,29 +102,38 @@ int main(int argc, char *argv[])
                 c_prob   = c;
             }
         }
-
-        c_nb[(unsigned int)(y[line])]++;
-        if( y[line] == c_prob ){
-            avg++;
-            c_avg[c_prob]++;
-            color = FOREGROUND_GREEN|FOREGROUND_INTENSITY;
-        }else{
-            color = FOREGROUND_RED|FOREGROUND_INTENSITY;
-        }
-
-        SetConsoleTextAttribute(hConsole, COLOR_RESET);
-        cout << line << "\t|" << y[line] << "\t|";
-        for(unsigned int c=0; c<10; c++)
+        if(display_is_on)
         {
-            if(y[line] == c)
-                SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE|color);
-            else
-                SetConsoleTextAttribute(hConsole, color);
-            cout << fixed << setprecision(2) << (prob[c]*100) << "\t";
+            c_nb[(unsigned int)(y[line])]++;
+            if( y[line] == c_prob ){
+                avg++;
+                c_avg[c_prob]++;
+                color = FOREGROUND_GREEN|FOREGROUND_INTENSITY;
+            }else{
+                color = FOREGROUND_RED|FOREGROUND_INTENSITY;
+            }
+
             SetConsoleTextAttribute(hConsole, COLOR_RESET);
-            cout << "|";
+            cout << line << "\t|" << y[line] << "\t|";
+            for(unsigned int c=0; c<10; c++)
+            {
+                if(y[line] == c)
+                    SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE|color);
+                else
+                    SetConsoleTextAttribute(hConsole, color);
+                cout << fixed << setprecision(2) << (prob[c]*100) << "\t";
+                SetConsoleTextAttribute(hConsole, COLOR_RESET);
+                cout << "|";
+            }
+        }else{
+            c_nb[(unsigned int)(y[line])]++;
+            if( y[line] == c_prob ){
+                avg++;
+                c_avg[c_prob]++;
+            }
         }
-        cout << endl;
+        if(display_is_on)
+            cout << endl;
     }
 
     SetConsoleTextAttribute(hConsole, COLOR_RESET);
@@ -124,6 +146,10 @@ int main(int argc, char *argv[])
     cout << endl;
     avg /= m/100;
     cout << "Total accuracy:\t" << fixed << setprecision(2) << avg << endl;
+
+    avg=Accuracy(Theta,X,y,m,n)*100;
+    cout << "Accuracy using accuracy:\t" << fixed << setprecision(2) << avg << endl;
+
 
 
     // free memory

@@ -92,7 +92,7 @@ bool destroy( FLOAT_TYPE ***M, unsigned int m);
 void copy_v(FLOAT_TYPE *u, const FLOAT_TYPE *v, unsigned int n);
 
 //! copy \param m x \param n FLOAT_TYPE elements of \param A to \param B
-void copy_M(FLOAT_TYPE **B, FLOAT_TYPE **A, unsigned int m, unsigned int n);
+void copy_M(FLOAT_TYPE ***B, FLOAT_TYPE ***A, unsigned int m, unsigned int n);
 
 //! Set all \param m x \param n elements of \param M to 0
 void zeros( FLOAT_TYPE **M, unsigned int m, unsigned int n );

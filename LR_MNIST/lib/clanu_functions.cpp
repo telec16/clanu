@@ -24,16 +24,15 @@ FLOAT_TYPE Accuracy(FLOAT_TYPE **Theta, FLOAT_TYPE **test_X, FLOAT_TYPE *test_y,
 {
     FLOAT_TYPE avg = 0;
     FLOAT_TYPE *prob=nullptr; allocate(&prob, 10);
-    FLOAT_TYPE max_prob;
 
     #if defined(_OPENMP)
-        #pragma omp parallel for
+        #pragma omp parallel for reduction(+:avg)
     #endif
     for(unsigned int line = 0; line<nb_lines; line++)
     {
         unsigned int c_prob = 0;
-        prob[0] = g( dot_product( Theta[0], test_X[line], nb_cols ) );
-        max_prob = prob[0];
+        FLOAT_TYPE max_prob=0;
+
         for(unsigned int c=0; c<10; c++)
         {
             prob[c] = g( dot_product( Theta[c], test_X[line], nb_cols ) );

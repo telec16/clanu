@@ -21,5 +21,9 @@ IF ( BUILD_SRC )
     add_executable(mnist_train_influence mnist_train_influence.cpp)
     target_link_libraries(mnist_train_influence LRLIB )
     install(TARGETS mnist_train_influence DESTINATION bin)
+
+    add_executable(mnist_train_influence_iter mnist_train_influence_iter.cpp)
+    target_link_libraries(mnist_train_influence_iter LRLIB )
+    install(TARGETS mnist_train_influence_iter DESTINATION bin)
 	
 ENDIF ( BUILD_SRC )

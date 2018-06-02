@@ -191,15 +191,14 @@ void copy_v(FLOAT_TYPE *u, const FLOAT_TYPE *v, unsigned int n)
 }
 
 // copy content of A to B. Memory spaces must be reserved first
-void copy_M(FLOAT_TYPE **B, FLOAT_TYPE **A, unsigned int m, unsigned int n)
+void copy_M(FLOAT_TYPE ***B, FLOAT_TYPE ***A, unsigned int m, unsigned int n)
 {
 #if defined(_OPENMP)
     #pragma omp parallel for
 #endif
-    for (unsigned int i = 0; i < m; i++)
-        std::memcpy(B[i], A[i], sizeof(FLOAT_TYPE) * n);
+    for(unsigned int i=0; i<m; i++)
+        std::memcpy((*B)[i], (*A)[i], sizeof(FLOAT_TYPE) * n);
 }
-
 // set to 0 the m by n elements of M
 void zeros( FLOAT_TYPE **M, unsigned int m, unsigned int n )
 {

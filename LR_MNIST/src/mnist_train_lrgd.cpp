@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
 
     extract_features_from_CSV( X, CSV, CSV_m, CSV_n );
     extract_labels_from_CSV  ( y, CSV, CSV_m );
-    destroy( &CSV, CSV_m);
     normalize(X, CSV_m, CSV_n);
+    destroy( &CSV, CSV_m);
 
     // Read TESTING CSV file
     CSV=nullptr;
@@ -93,8 +93,9 @@ int main(int argc, char *argv[])
 
     extract_features_from_CSV( test_X, CSV, test_m, CSV_n );
     extract_labels_from_CSV  ( test_y, CSV, test_m );
-    destroy( &CSV, CSV_m);
     normalize(test_X, test_m, CSV_n);
+    destroy( &CSV, CSV_m);
+
 
 
     // Allocate Theta variable
