@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
     cout << "argc:" << argc <<endl;
     if( argc < 7)
         {
-            cerr << " Usage : " << argv[0] << " data\\path Train_filename.csv Test_filename.csv Theta.csv max_it tau" << endl;
+            cerr << " Usage : " << argv[0] << " data\\path Train_filename.csv Test_filename.csv Theta_filename.csv max_it tau" << endl;
             return -1;
         }
 
@@ -183,12 +183,19 @@ int main(int argc, char *argv[])
     cout << "Precision globale : " << acc << endl;
 
     // free memory
+    cout << "Freeing :" << endl;
+    cout << "-prob" << endl;
     destroy( &prob   );
+    cout << "-y" << endl;
     destroy( &y      );
+    cout << "-test_y" << endl;
     destroy( &test_y );
 
+    cout << "-Theta" << endl;
     destroy( &Theta, 10);
+    cout << "-X" << endl;
     destroy( &X, m     );
+    cout << "-test_X" << endl;
     destroy( &test_X, test_m );
 
     cout << " end." << endl;

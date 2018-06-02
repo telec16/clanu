@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 {
     if( argc < 4)
     {
-        cerr << " Usage : " << argv[0] << " data\\path Test_filename.csv Theta.csv" << endl;
+        cerr << " Usage : " << argv[0] << " data\\path Test_filename.csv Theta_filename.csv" << endl;
         return -1;
     }
 
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
                 SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE|color);
             else
                 SetConsoleTextAttribute(hConsole, color);
-            cout << prob[c] << "\t";
+            cout << fixed << setprecision(2) << (prob[c]*100) << "\t";
             SetConsoleTextAttribute(hConsole, COLOR_RESET);
             cout << "|";
         }
@@ -127,10 +127,15 @@ int main(int argc, char *argv[])
 
 
     // free memory
+    cout << "Freeing :" << endl;
+    cout << "-prob" << endl;
     destroy( &prob   );
+    cout << "-y" << endl;
     destroy( &y      );
 
+    cout << "-Theta" << endl;
     destroy( &Theta, 10);
+    cout << "-X" << endl;
     destroy( &X, m     );
 
     cout << " end." << endl;

@@ -161,9 +161,9 @@ bool allocate(FLOAT_TYPE ***M, unsigned int m, unsigned int n)
     #pragma omp parallel for
 #endif
     for (unsigned int i = 0; i < m; i++)
-        {
+    {
         (*M)[i] = new FLOAT_TYPE[n];
-        }
+    }
 	return true;	
 }
 
@@ -185,9 +185,19 @@ bool destroy(FLOAT_TYPE ***M, unsigned int m)
 }
 
 // copy content of v to u. Memory spaces must be reserved first
-void copy(FLOAT_TYPE *u, const FLOAT_TYPE *v, unsigned int n)
+void copy_v(FLOAT_TYPE *u, const FLOAT_TYPE *v, unsigned int n)
 {
    if( u != v)  std::memcpy(u, v, sizeof(FLOAT_TYPE) * n);
+}
+
+// copy content of A to B. Memory spaces must be reserved first
+void copy_M(FLOAT_TYPE **B, FLOAT_TYPE **A, unsigned int m, unsigned int n)
+{
+#if defined(_OPENMP)
+    #pragma omp parallel for
+#endif
+    for (unsigned int i = 0; i < m; i++)
+        std::memcpy(B[i], A[i], sizeof(FLOAT_TYPE) * n);
 }
 
 // set to 0 the m by n elements of M

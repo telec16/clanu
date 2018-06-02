@@ -2,9 +2,10 @@
 
 *.mat
 *.asv
+*.csv
+!theta*
 
 LR_MNIST/html/*
-LR_MNIST/data/*
 
 code_matlab/data/*
 
