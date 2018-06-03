@@ -1,24 +1,26 @@
 // Clanu 2017-2018 - INSA Lyon - GE
 
+#define FLOAT_TYPE float
+#define FILE_PATH_SIZE 75
+
 #include <iostream>
+#include <cstring>
+
 #if defined(_OPENMP)
     #include <omp.h>
 #endif
 
-#define FLOAT_TYPE float
-
 #include "common_functions.h"
 #include "clanu_functions.h"
 #include "timing_functions.h"
-#include <cstring>
-
-
 
 using namespace std;
 
+
+
 int main(int argc, char *argv[])
 {
-    // Test some compialtion options
+    // Test some compilation options
     #if defined(_OPENMP)
         cout << " OPENMP is activated  : great! " << endl;
     #else
@@ -41,9 +43,9 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    char train_file[50] = {0};
-    char test_file[50]  = {0};
-    char theta_file[50] = {0};
+    char train_file[FILE_PATH_SIZE] = {0};
+    char test_file[FILE_PATH_SIZE]  = {0};
+    char theta_file[FILE_PATH_SIZE] = {0};
 
     strcat(train_file, argv[1]);strcat(train_file, argv[2]);
     strcat(test_file , argv[1]);strcat(test_file , argv[3]);

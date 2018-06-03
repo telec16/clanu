@@ -1,26 +1,29 @@
 // Clanu 2017-2018 - INSA Lyon - GE
 
+#define FLOAT_TYPE float
+#define COLOR_RESET 0x0F
+#define FOREGROUND_WHITE 0x07
+#define BACKGROUND_WHITE 0x70
+
 #include <iostream>
 #include <cmath>
 #include <cstring>
 #include <windows.h>   // WinApi header
 #include <iomanip>
-#define FLOAT_TYPE float
 
 #include "common_functions.h"
 #include "clanu_functions.h"
 #include "timing_functions.h"
 
-#define COLOR_RESET 0x0F
-#define FOREGROUND_WHITE 0x07
-#define BACKGROUND_WHITE 0x70
-
 using namespace std;
+
+
 
 int main(int argc, char *argv[])
 {
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(hConsole, COLOR_RESET);
+
     if( argc < 5)
     {
         cerr << " Usage : " << argv[0] << " data\\path Test_filename.csv Theta_filename.csv Affichage_On/Off" << endl;
@@ -41,6 +44,12 @@ int main(int argc, char *argv[])
     cout << " ** summarize options : " << endl;
     cout << " \t Testing  file : " << test_file << endl;
     cout << " \t Theta  file : " << theta_file << endl;
+    if(display_is_on)
+    {
+        cout<<"Display is active, specify ""off"" to avoid displaying all lines."<<endl;
+    } else {
+        cout<<"Display is not active. Specify ""on"" to display all lines."<<endl;
+    }
 
 
 
@@ -71,12 +80,6 @@ int main(int argc, char *argv[])
     tac();
     cout << "Reading and initialization time : " << duration() << "s " << endl;
 
-    if(display_is_on)
-    {
-        cout<<"Display is active, specify ""off"" to avoid displaying all lines."<<endl;
-    } else {
-        cout<<"Display is not active. Specify ""on"" to display all lines."<<endl;
-    }
 
 
     int color;
@@ -85,14 +88,13 @@ int main(int argc, char *argv[])
     FLOAT_TYPE c_avg[10] = {0};
     FLOAT_TYPE c_nb[10] = {0};
     FLOAT_TYPE *prob=nullptr; allocate(&prob, 10);
-    FLOAT_TYPE max_prob;
 
     cout << "line\t|y\t|0\t|1\t|2\t|3\t|4\t|5\t|6\t|7\t|8\t|9\t|" << endl;
     for(unsigned int line = 0; line<m; line++)
     {
         unsigned int c_prob = 0;
-        prob[0] = g( dot_product( Theta[0], X[line], n ) );
-        max_prob = prob[0];
+        FLOAT_TYPE max_prob=0;
+
         for(unsigned int c=0; c<10; c++)
         {
             prob[c] = g( dot_product( Theta[c], X[line], n ) );
@@ -102,12 +104,13 @@ int main(int argc, char *argv[])
                 c_prob   = c;
             }
         }
+
         if(display_is_on)
         {
-            c_nb[(unsigned int)(y[line])]++;
-            if( y[line] == c_prob ){
-                avg++;
-                c_avg[c_prob]++;
+            c_nb[(unsigned int)(y[line])]++;                    //Add a digit
+            if( y[line] == c_prob ){                            //Good prediction: yay !
+                avg++;                                          //Global average
+                c_avg[c_prob]++;                                //Digit average
                 color = FOREGROUND_GREEN|FOREGROUND_INTENSITY;
             }else{
                 color = FOREGROUND_RED|FOREGROUND_INTENSITY;
@@ -115,9 +118,10 @@ int main(int argc, char *argv[])
 
             SetConsoleTextAttribute(hConsole, COLOR_RESET);
             cout << line << "\t|" << y[line] << "\t|";
+
             for(unsigned int c=0; c<10; c++)
             {
-                if(y[line] == c)
+                if(y[line] == c)                                //Highlight the current digit
                     SetConsoleTextAttribute(hConsole, BACKGROUND_BLUE|color);
                 else
                     SetConsoleTextAttribute(hConsole, color);
@@ -125,18 +129,20 @@ int main(int argc, char *argv[])
                 SetConsoleTextAttribute(hConsole, COLOR_RESET);
                 cout << "|";
             }
-        }else{
+            cout << endl;
+        }
+        else
+        {
             c_nb[(unsigned int)(y[line])]++;
             if( y[line] == c_prob ){
                 avg++;
                 c_avg[c_prob]++;
             }
         }
-        if(display_is_on)
-            cout << endl;
     }
 
     SetConsoleTextAttribute(hConsole, COLOR_RESET);
+
     cout << "Digit accuracy:\t|";
     for(unsigned int c=0; c<10; c++)
     {
@@ -144,6 +150,7 @@ int main(int argc, char *argv[])
         cout << fixed << setprecision(2) << c_avg[c] << "\t|";
     }
     cout << endl;
+
     avg /= m/100;
     cout << "Total accuracy:\t" << fixed << setprecision(2) << avg << endl;
 

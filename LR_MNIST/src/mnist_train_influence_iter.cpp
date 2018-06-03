@@ -1,26 +1,29 @@
 // Clanu 2017-2018 - INSA Lyon - GE
 
+#define FLOAT_TYPE float
+#define MAIN_LOOP 1
+#define FILE_PATH_SIZE 75
+
 #include <iostream>
+#include <fstream>
+#include <cstring>
+
 #if defined(_OPENMP)
     #include <omp.h>
 #endif
 
-#define FLOAT_TYPE float
-
 #include "common_functions.h"
 #include "clanu_functions.h"
 #include "timing_functions.h"
-#include <fstream>
-#include <cstring>
-
-#define MAIN_LOOP 1
-#define SUB_LOOP 2
 
 using namespace std;
 
+
+
+
 int main(int argc, char *argv[])
 {
-    // Test some compialtion options
+    // Test some compilation options
     #if defined(_OPENMP)
         cout << " OPENMP is activated  : great! " << endl;
     #else
@@ -35,7 +38,7 @@ int main(int argc, char *argv[])
 
     FLOAT_TYPE tau;
     unsigned int max_it;
-    unsigned int conjugate_gradient;
+    unsigned int conjugate_gradient=0;
 
     cout << "argc:" << argc <<endl;
     if( argc < 7)
@@ -44,9 +47,9 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    char train_file[50] = {0};
-    char test_file[50]  = {0};
-    char accuracy_file[50] = {0};
+    char train_file[FILE_PATH_SIZE] = {0};
+    char test_file[FILE_PATH_SIZE]  = {0};
+    char accuracy_file[FILE_PATH_SIZE] = {0};
 
     strcat(train_file, argv[1]);strcat(train_file, argv[2]);
     strcat(test_file , argv[1]);strcat(test_file , argv[3]);
@@ -63,7 +66,7 @@ int main(int argc, char *argv[])
     cout << " ** summarize options : " << endl;
     cout << " \t Training file : " << train_file << endl;
     cout << " \t Testing  file : " << test_file << endl;
-    cout << " \t Accuracy  file : " << accuracy_file << endl;
+    cout << " \t Accuracy file : " << accuracy_file << endl;
     cout << " \t max_it = " << max_it << endl;
     cout << " \t tau    = " << tau << endl;
     if(conjugate_gradient){
@@ -138,7 +141,6 @@ int main(int argc, char *argv[])
     cout<<"Tau="<<tau<<endl;
 
     // Training : k iterations
-    tic(SUB_LOOP);
     for(unsigned int k=0; k < max_it; k++)
     {
         cumulative_error = 0;
@@ -217,15 +219,12 @@ int main(int argc, char *argv[])
             max_acc = acc;
         }
         cout << endl;
-
-        FLOAT_TYPE facc = max_acc; //Accuracy(Theta_max, test_X, test_y, m, n)*100;
-        cout << "Final accurracy : " << facc << endl;
-
-        tac(SUB_LOOP);
-        cout << "training time : " << duration(SUB_LOOP) << endl;
     }
 
     fileStream.close();
+
+    FLOAT_TYPE facc = max_acc; //Accuracy(Theta_max, test_X, test_y, m, n)*100;
+    cout << "Final accurracy : " << facc << endl;
 
     tac(MAIN_LOOP);
     cout << "total time : " << duration(MAIN_LOOP) << endl;

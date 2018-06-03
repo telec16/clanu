@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
+
 #ifdef _OPENMP
     #include <omp.h>
 #endif
@@ -16,9 +17,7 @@
 
 using namespace std;
 
-///////////////////////////////////////////////////////////
-//           START YOUR MODIFICATIONS HERE               //
-///////////////////////////////////////////////////////////
+
 
 FLOAT_TYPE Accuracy(FLOAT_TYPE **Theta, FLOAT_TYPE **test_X, FLOAT_TYPE *test_y, const unsigned int nb_lines, const unsigned int nb_cols)
 {

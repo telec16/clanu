@@ -2,8 +2,12 @@
 // g++ mnist_train_lrgd.cpp common_functions.cpp -o mnist_train_lrgd -ffast-math -fopenmp -O3
 
 #define FLOAT_TYPE float
+#define FILE_PATH_SIZE 75
 
 #include <iostream>
+#include <stdio.h>
+#include <cstring>
+
 #if defined(_OPENMP)
     #include <omp.h>
 #endif
@@ -12,15 +16,13 @@
 #include "clanu_functions.h"
 #include "timing_functions.h"
 
-#include <stdio.h>
-#include <cstring>
-
 using namespace std;
+
 
 
 int main(int argc, char *argv[])
 {
-    // Test some compialtion options
+    // Test some compilation options
     #if defined(_OPENMP)
         cout << " OPENMP is activated  : great! " << endl;
     #else
@@ -43,9 +45,9 @@ int main(int argc, char *argv[])
             return -1;
         }
 
-    char train_file[50] = {0};
-    char test_file[50]  = {0};
-    char theta_file[50] = {0};
+    char train_file[FILE_PATH_SIZE] = {0};
+    char test_file[FILE_PATH_SIZE]  = {0};
+    char theta_file[FILE_PATH_SIZE] = {0};
 
     strcat(train_file, argv[1]);strcat(train_file, argv[2]);
     strcat(test_file , argv[1]);strcat(test_file , argv[3]);
@@ -96,8 +98,6 @@ int main(int argc, char *argv[])
     normalize(test_X, test_m, CSV_n);
     destroy( &CSV, CSV_m);
 
-
-
     // Allocate Theta variable
     FLOAT_TYPE **Theta=nullptr; allocate(&Theta, 10, n);
 
@@ -120,28 +120,28 @@ int main(int argc, char *argv[])
     #endif
         for(unsigned int c=0; c<10; c++)
         {
-            FLOAT_TYPE *theta_c_k = Theta[c];                    //  linked on Theta, for easier reading
-            FLOAT_TYPE *d_c_k=nullptr; allocate(&d_c_k,n);       // ( definied and allocated here for concurrency )
-            zeros( d_c_k, n);                               // d_c_k = {0,0,0...} i.e. initialization
+            FLOAT_TYPE *theta_c_k = Theta[c];                   //  linked on Theta, for easier reading
+            FLOAT_TYPE *d_c_k=nullptr; allocate(&d_c_k,n);      // ( definied and allocated here for concurrency )
+            zeros( d_c_k, n);                                   // d_c_k = {0,0,0...} i.e. initialization
             for(unsigned int i=0; i<m; i++)
             {
-                FLOAT_TYPE y_c_i = (y[i]==c)?1.0:0.0;            // y_c_i = 1 if y[i] == c
-                                                            //         0  otherwise
+                FLOAT_TYPE y_c_i = (y[i]==c)?1.0:0.0;           // y_c_i = 1 if y[i] == c
+                                                                //         0  otherwise
 
                 FLOAT_TYPE h_theta_c_i =
                         g( dot_product( theta_c_k, X[i], n ) ) - y_c_i; // h_theta_c_i = g( theta_c_k . X[i] ) - y_c_i
 
-                mac_v_v_s( d_c_k, X[i], h_theta_c_i, n );    //  d_c_k += X[i] * h_theta_c_i
+                mac_v_v_s( d_c_k, X[i], h_theta_c_i, n );       //  d_c_k += X[i] * h_theta_c_i
 
-                cumulative_error += abs(h_theta_c_i);            // ( used for evolution tracking )
+                cumulative_error += abs(h_theta_c_i);           // ( used for evolution tracking )
             }
-            mul_v_s( d_c_k, d_c_k, -tau / m,     n);        //  d_c_k *= - tau / m
-            sum_2v( theta_c_k, theta_c_k, d_c_k, n);        //  theta_c_k+1 = theta_c_k + d_c_k
-            destroy(&d_c_k);                                // ( free d_c_k )
+            mul_v_s( d_c_k, d_c_k, -tau / m,     n);            //  d_c_k *= - tau / m
+            sum_2v( theta_c_k, theta_c_k, d_c_k, n);            //  theta_c_k+1 = theta_c_k + d_c_k
+            destroy(&d_c_k);                                    // ( free d_c_k )
         }
         tac();
         cout << "it : " << k << "\t time : " << duration() << " s\t error : "<< cumulative_error/(10*m);
-        // modify below for question 5.2.5
+
         FLOAT_TYPE acc = Accuracy(Theta, test_X, test_y, m, n)*100;
         if((k%5) == 0){
             cout << "\taccuracy : "<<acc;
@@ -156,8 +156,6 @@ int main(int argc, char *argv[])
 
     unsigned int linesT, colsT;
     readTheta(theta_file, Theta, &linesT, &colsT);
-
-
 
     // Test with data at "test_index" from test.csv
     unsigned int test_index=18;
@@ -194,7 +192,7 @@ int main(int argc, char *argv[])
 
     cout << "-Theta" << endl;
     destroy( &Theta, 10);
-    cout << "-X" << endl;
+    cout << "-X" << endl; //For some reasons sometimes this line hang forever
     destroy( &X, m     );
     cout << "-test_X" << endl;
     destroy( &test_X, test_m );

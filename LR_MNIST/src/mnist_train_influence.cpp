@@ -1,21 +1,25 @@
 // Clanu 2017-2018 - INSA Lyon - GE
 
+#define FLOAT_TYPE float
+#define MAIN_LOOP 1
+#define SUB_LOOP 2
+#define FILE_PATH_SIZE 75
+
 #include <iostream>
+#include <fstream>
+#include <cstring>
+
 #if defined(_OPENMP)
     #include <omp.h>
 #endif
 
-#define FLOAT_TYPE float
-
 #include "common_functions.h"
 #include "clanu_functions.h"
 #include "timing_functions.h"
-#include <cstring>
-
-#define MAIN_LOOP 1
-#define SUB_LOOP 2
 
 using namespace std;
+
+
 
 int main(int argc, char *argv[])
 {
@@ -36,7 +40,7 @@ int main(int argc, char *argv[])
     FLOAT_TYPE tau_step;
     FLOAT_TYPE tau_end;
     unsigned int max_it;
-    unsigned int conjugate_gradient;
+    unsigned int conjugate_gradient=0;
 
     cout << "argc:" << argc <<endl;
     if( argc < 10)
@@ -45,9 +49,9 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    char train_file[50] = {0};
-    char test_file[50]  = {0};
-    char theta_file[50] = {0};
+    char train_file[FILE_PATH_SIZE] = {0};
+    char test_file[FILE_PATH_SIZE]  = {0};
+    char theta_file[FILE_PATH_SIZE] = {0};
 
     strcat(train_file, argv[1]);strcat(train_file, argv[2]);
     strcat(test_file , argv[1]);strcat(test_file , argv[3]);
@@ -74,6 +78,8 @@ int main(int argc, char *argv[])
     } else {
         cout<<"Simple gradient descent. Specify ""conjugate_gradient"" to use the said method."<<endl;
     }
+
+
 
     cout << "Reading and initializing ... This may take a while (~20-30s) " << endl;
     tic();
@@ -107,7 +113,6 @@ int main(int argc, char *argv[])
     normalize(test_X, CSV_m, CSV_n);
     destroy( &CSV, CSV_m);
 
-
     // Allocate Theta variable
     FLOAT_TYPE **Theta=nullptr; allocate(&Theta, 10, n);
     FLOAT_TYPE **Theta_max=nullptr; allocate(&Theta_max, 10, n);
@@ -120,6 +125,8 @@ int main(int argc, char *argv[])
 
     tac();
     cout << "Reading and initialization time : " << duration() << "s " << endl;
+
+
 
     tic(MAIN_LOOP);
     for(FLOAT_TYPE tau=tau_start; tau<=(tau_end+.01); tau+=tau_step)
@@ -208,7 +215,7 @@ int main(int argc, char *argv[])
             if(max_acc < acc)
             {
                 saveTheta("temp", Theta, 10, n);
-                //copy_M(&Theta_max, &Theta, m, n);
+                //copy_M(&Theta_max, &Theta, m, n); //This seems to make the programm crash
                 cout << "\tmax : "<<acc;
                 max_acc = acc;
             }
@@ -218,7 +225,7 @@ int main(int argc, char *argv[])
         FLOAT_TYPE facc = max_acc; //Accuracy(Theta_max, test_X, test_y, m, n)*100;
         cout << "Final accurracy : " << facc << endl;
 
-        char file[80] = {0};
+        char file[FILE_PATH_SIZE+25] = {0};
         sprintf(file, "%s_tau=%.1f_maxIt=%d_acc=%.3f.csv", theta_file, tau, max_it, facc);
         saveTheta(file, Theta_max, 10, n);
 
@@ -251,3 +258,4 @@ int main(int argc, char *argv[])
     cout << " end." << endl;
     return 0;
 }
+
