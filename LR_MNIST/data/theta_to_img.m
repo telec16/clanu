@@ -1,6 +1,7 @@
-clear; close all;
-theta = csvread('theta.csv');
-theta = theta(:,1:(end-1));
+%clear; close all;
+%theta = csvread('theta_cg.csv');
+%theta = theta(:,1:(end-1));
+theta = all_theta;
 
 cols=4;
 imgW=28;
@@ -31,7 +32,7 @@ figure;
 imshow(thetaG);
 
 function img = splitLines(v, c)
-    l=length(v) / c;
+    l=floor(length(v) / c);
     img = zeros(l,c);
     for i=1:l
         img(i,:)=v(((i-1)*c+1):i*c);

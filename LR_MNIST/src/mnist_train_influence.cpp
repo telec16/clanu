@@ -221,6 +221,8 @@ int main(int argc, char *argv[])
             }
             cout << endl;
         }
+        unsigned int linesT, colsT;
+        readTheta("temp", Theta_max, &linesT, &colsT);
 
         FLOAT_TYPE facc = max_acc; //Accuracy(Theta_max, test_X, test_y, m, n)*100;
         cout << "Final accurracy : " << facc << endl;

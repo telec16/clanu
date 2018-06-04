@@ -5,7 +5,7 @@ addpath('../');
 
 
 %-- parameters
-maxIter = 100;   %-- gradient descent: maximum number of iterations
+maxIter = 200;   %-- gradient descent: maximum number of iterations
 epsilon = 0.001; %-- gradient descent: convergence thresholder
 tau = 1;        %-- gradient descent: learning rate coefficient 
         
@@ -54,7 +54,7 @@ visu.displayDatabase(sel,widthDigit,heightDigit);
 tic
 %--  train logistic regression method
 disp('\nTraining Logistic Regression...\n')
-[all_theta] = lrc.train(X, y, num_labels, maxIter, epsilon, tau);
+[all_theta] = lrc.train(X, y, num_labels, maxIter, epsilon, tau, "conjugate");
 toc
 
 %-- Save learned parameters
